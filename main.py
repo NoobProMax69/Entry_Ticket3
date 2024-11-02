@@ -10,30 +10,24 @@ def display_menu():
 
 def display_suspect(suspect, graph):
     print(f"{suspect}:")
-
-    # Get the set of accomplices from the graph
-    accomplices = graph.get(suspect, set()) # If the suspect is not in the graph, an empty set is returned
-
-    if accomplices:
-        # Print each accomplice's name, indented by 4 spaces
-        for accomplice in accomplices:
-            print(f"    {accomplice}")
+    accomplices = graph.get(suspect, set())
+    for accomplice in accomplices:
+        print(f"    {accomplice}")
 
 
 def display_all_suspects(graph):
     print("---- All suspects ----")
     for suspect in graph:
         display_suspect(suspect, graph)
+    print()
+
 
 def find_potential_accomplices(suspect, graph):
     potential_accomplices = set()
 
-    # Iterate through each accomplice of the suspect
     for accomplice in graph[suspect]:
-        # Add all accomplices of the current accomplice to the set
         potential_accomplices.update(graph.get(accomplice, set()))
 
-    # Remove the suspect and their known accomplices from the set
     potential_accomplices.discard(suspect)
     potential_accomplices.difference_update(graph[suspect])
 
@@ -69,8 +63,9 @@ def save_to_file(graph, filename):
 
 
 def main():
-
+    print()
     filename = input("Enter path to graph file: ")
+    print()
     graph = load_from_file(filename)
 
     while True:
@@ -84,7 +79,12 @@ def main():
         elif choice == "2":
             suspect_name = input("Enter suspect name: ")
             accomplice_name = input("Enter accomplice name: ")
+            if suspect_name not in graph:
+                graph[suspect_name] = set()
+            if accomplice_name not in graph:
+                graph[accomplice_name] = set()
             graph[suspect_name].add(accomplice_name)
+            graph[accomplice_name].add(suspect_name)
             save_to_file(graph, filename)
 
         elif choice == "3":
